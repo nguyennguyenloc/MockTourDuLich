@@ -1,49 +1,69 @@
 import React from "react";
 import "./Cards.css";
-import CardItem from "./CardItem";
-function Cards() {
-  return (
-    <div className="cards">
-      <h1>Check out theses EPIC Destinations</h1>
-      <div className="cards__container">
-        <div className="cards__wrapper">
-          <ul className=" cards__items">
-            <CardItem
-              src="images/img-9.jpg"
-              text="Explore the hidden waterfall deep inside the Amazon Jungle"
-              label="Adventure"
-              path="/services"
-            />
-            <CardItem
-              src="images/img-2.jpg"
-              text="Travel through the Islands of Bali in a Private Cruise"
-              label="Luxury"
-              path="/services"
-            />
-          </ul>
-          <ul className="cards__items">
-            <CardItem
-              src="images/img-3.jpg"
-              text="Set Sail in the Atlantic Ocean visiting Uncharted Waters"
-              label="Mystery"
-              path="/services"
-            />
-            <CardItem
-              src="images/img-4.jpg"
-              text="Experience Football on Top of the Himilayan Mountains"
-              label="Adventure"
-              path="/products"
-            />
-            <CardItem
-              src="images/img-8.jpg"
-              text="Ride through the Sahara Desert on a guided camel tour"
-              label="Adrenaline"
-              path="/sign-up"
-            />
-          </ul>
+import { connect } from "react-redux";
+import { Link } from "react-router-dom";
+import { Component } from "react";
+import { detailsTourTravelAction } from "../redux/actions/tourTravelActions";
+
+class Cards extends Component {
+  renderCarItems = () => {
+    return this.props.tourList.map((items, index) => {
+      return (
+        <div key={index} className="col-4">
+          <li className="cards__item">
+            <Link
+              onClick={() => {
+                console.log("chi tiết ", items);
+                this.props.xemChiTiet(items);
+              }}
+              className="cards__item__link"
+              to={items.path}
+            >
+              <figure
+                className="cards__item__pic-wrap"
+                data-category={items.label}
+              >
+                <img
+                  className="cards__item__img"
+                  src={items.img}
+                  alt="TravelImage"
+                />
+              </figure>
+              <div className="cards__item__info">
+                <h5 className="cards__item__text">{items.text}</h5>
+              </div>
+            </Link>
+          </li>
+        </div>
+      );
+    });
+  };
+  render() {
+    return (
+      <div>
+        <div className="cards">
+          <h1>Check out theses EPIC Destinations</h1>
+          <div className="cards__container">
+            <div className="cards__wrapper row">{this.renderCarItems()}</div>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
-export default Cards;
+
+const mapStateToProps = (state) => {
+  return {
+    tourList: state.tourTravelReducer.tourList,
+    cart: state.tourTravelReducer.cart,
+  };
+};
+
+const mapDispathToProps = (dispatch) => {
+  return {
+    xemChiTiet: (sanpham) => {
+      dispatch(detailsTourTravelAction(sanpham));
+    },
+  };
+};
+export default connect(mapStateToProps, mapDispathToProps)(Cards);
